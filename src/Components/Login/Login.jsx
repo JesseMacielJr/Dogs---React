@@ -9,6 +9,7 @@ import { UserContext } from '../../UserContext';
 const Login = () => {
   const { login } = React.useContext(UserContext);
 
+  // Se o usuário for para o "login" e ocorrer autologin então redireciona para "conta"
   if (login) return <Navigate to="/conta" />;
 
   return (
