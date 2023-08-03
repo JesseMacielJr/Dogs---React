@@ -1,9 +1,60 @@
-import React from 'react'
+import React from 'react';
+import styles from './UserPhotoPost.module.css';
+import useForm from '../../Hooks/useForm';
+import useFetch from '../../Hooks/useFetch';
+import Input from '../Forms/Input';
+import Button from '../Forms/Button';
+import Error from '../Helper/Error';
+import { PHOTO_POST } from '../../api';
+import { useNavigate } from 'react-router-dom';
 
 const UserPhotoPost = () => {
-  return (
-    <div>UserPhotoPost</div>
-  )
-}
+  const nome = useForm();
+  const peso = useForm('number');
+  const idade = useForm('number');
+  const [img, setImg] = React.useState({});
+  const { data, error, loading, request } = useFetch();
+  const navigate = useNavigate();
 
-export default UserPhotoPost
+  // Se o "data" muda significa que ele fez a postagem de um item
+  React.useEffect(() => {
+    // o "data" pode mudar para null, então é preciso verificar
+    if (data) navigate('conta');
+  }, [data, navigate]);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('img', img.raw);
+    formData.append('nome', nome.value);
+    formData.append('peso', peso.value);
+    formData.append('idade', idade.value);
+
+    const token = window.localStorage.getItem('token');
+    const { url, options } = PHOTO_POST(formData, token);
+    request(url, options);
+  }
+
+  function handleImgChange({ target }) {
+    setImg({
+      raw: target.files[0],
+      preview: URL.createObjectURL(target.files[0]) // vem em um formato que não da para ler, por isso usamos o URL
+    });
+  }
+
+  return <section className={`${styles.photoPost} animeLeft`}>
+    <form onSubmit={handleSubmit}>
+      <Input label="Nome" type="text" name="nome" placeholder="Ex: Rex" {...nome} />
+      <Input label="Peso" type="text" name="Peso" placeholder="Ex: 4" {...peso} />
+      <Input label="Idade" type="text" name="idade" placeholder="Ex: 2" {...idade} />
+      <input className={styles.file} type="file" name="img" id="img" onChange={handleImgChange} />
+      {loading ? <Button disabled>Enviando...</Button> : <Button>Enviar</Button>}
+      <Error error={error} />
+    </form>
+    <div>
+      {img.preview && <div className={styles.preview} style={{ backgroundImage: `url('${img.preview}')` }}></div>}
+    </div>
+  </section>;
+};
+
+export default UserPhotoPost;

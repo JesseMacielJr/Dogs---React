@@ -12,16 +12,34 @@ const UserHeaderNav = () => {
   const { userLogout } = React.useContext(UserContext)
   const mobile = useMedia('(max-width: 40rem)');
   const [mobileMenu, setMobileMenu] = React.useState(false);
+  const menuRef = React.useRef(null);
 
   const { pathname } = useLocation();
   React.useEffect(() => {
     setMobileMenu(false);
   }, [pathname])
 
+  function handleMobileMenu() {
+    setMobileMenu(!mobileMenu)
+  }
+
+  const handleClickOutsideMobileMenu = (event) => {
+    if (menuRef.current && !menuRef.current.contains(event.target)) {
+      setMobileMenu(false);
+    }
+  }
+
+  React.useEffect(() => {
+    document.addEventListener('click', handleClickOutsideMobileMenu);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutsideMobileMenu);
+    };
+  }, []);
 
   return (
     <>
-      {mobile && <button aria-label='Menu' className={`${styles.mobileButton} ${mobileMenu && styles.mobileButtonActive}`} onClick={() => setMobileMenu(!mobileMenu)}></button>}
+      {mobile && <button ref={menuRef} aria-label='Menu' className={`${styles.mobileButton} ${mobileMenu && styles.mobileButtonActive}`} onClick={handleMobileMenu}></button>}
       <nav className={`${mobile ? styles.navMobile : styles.nav} ${mobileMenu && styles.navMobileActive}`}>
         <NavLink to="/conta" end><MinhasFotos />{mobile && "Minhas fotos"}</NavLink>
         <NavLink to="/conta/estatisticas"><Estatisticas />{mobile && "Estatísticas"}</NavLink>
