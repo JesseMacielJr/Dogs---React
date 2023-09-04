@@ -19,7 +19,6 @@ const FeedPhotos = ({ page, user, setModalPhoto, setInfinite }) => {
       }); // "user: 0" puxa de qualquer usuário
       const { response, json } = await request(url, options);
       if (response && response.ok && json.length < total) setInfinite(false);
-      console.log(json);
     }
     fetchPhotos();
   }, [request, user, page, setInfinite]);
