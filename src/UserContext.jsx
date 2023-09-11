@@ -1,6 +1,6 @@
-import React from 'react';
-import { TOKEN_POST, TOKEN_VALIDATE_POST, USER_GET } from './api';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { TOKEN_POST, TOKEN_VALIDATE_POST, USER_GET } from "./api";
+import { useNavigate } from "react-router-dom";
 
 export const UserContext = React.createContext();
 
@@ -11,16 +11,13 @@ export const UserStorage = ({ children }) => {
   const [error, setError] = React.useState(null);
   const navigate = useNavigate();
 
-  const userLogout = React.useCallback(
-    async function () {
-      setData(null);
-      setError(null);
-      setLoading(false);
-      setLogin(false);
-      window.localStorage.removeItem('token');
-    },
-    []
-  );
+  const userLogout = React.useCallback(async function () {
+    setData(null);
+    setError(null);
+    setLoading(false);
+    setLogin(false);
+    window.localStorage.removeItem("token");
+  }, []);
 
   async function getUser(token) {
     const { url, options } = USER_GET(token);
@@ -39,9 +36,9 @@ export const UserStorage = ({ children }) => {
       const tokenRes = await fetch(url, options);
       if (!tokenRes.ok) throw new Error(`Error: Usuário inválido`);
       const { token } = await tokenRes.json();
-      window.localStorage.setItem('token', token);
+      window.localStorage.setItem("token", token);
       await getUser(token);
-      navigate('/conta');
+      navigate("/");
     } catch (err) {
       setError(err.message);
       setLogin(false);
@@ -52,14 +49,14 @@ export const UserStorage = ({ children }) => {
 
   React.useEffect(() => {
     async function autoLogin() {
-      const token = window.localStorage.getItem('token');
+      const token = window.localStorage.getItem("token");
       if (token) {
         try {
           setError(null);
           setLoading(true);
           const { url, options } = TOKEN_VALIDATE_POST(token);
           const response = await fetch(url, options);
-          if (!response.ok) throw new Error('Token inválido');
+          if (!response.ok) throw new Error("Token inválido");
           await getUser(token);
         } catch (err) {
           userLogout();
@@ -75,7 +72,8 @@ export const UserStorage = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ userLogin, userLogout, data, error, loading, login }}>
+      value={{ userLogin, userLogout, data, error, loading, login }}
+    >
       {children}
     </UserContext.Provider>
   );
