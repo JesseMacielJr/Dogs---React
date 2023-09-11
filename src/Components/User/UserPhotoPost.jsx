@@ -20,7 +20,7 @@ const UserPhotoPost = () => {
   // Se o "data" muda significa que ele fez a postagem de um item
   React.useEffect(() => {
     // o "data" pode mudar para null, então é preciso verificar
-    if (data) navigate("conta");
+    if (data) navigate("/conta");
   }, [data, navigate]);
 
   function handleSubmit(event) {
